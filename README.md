@@ -2,6 +2,8 @@
 
 Application to get distance mouse moved on table and number of clicks.
 
+![Mousemeter](https://github.com/miamibc/mousemeter/blob/master/demo.gif?raw=true)
+
 There will be two versions of this program for two platforms:
 
 - linux/mousemeter - console app
