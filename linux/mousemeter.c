@@ -1,69 +1,62 @@
-/** gcc mousemeter.c -o mousemeter -lX11 -lm **/
-#include <X11/Xlib.h>
+// gcc mousemeter.c -o mousemeter -lm && sudo ./mousemeter
+
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
+#include <fcntl.h>
 #include <math.h>
 
-int main (int argc, char **argv) {
+const char *device = "/dev/input/mice";
+const int  pps = 600; // pixels per cm
 
-	setbuf(stdout, NULL); // disable terminal buffering
-
-	Window root_window; 
-	float distance = 0, old_distance = -1,  delta;
-	unsigned int buttons, old_buttons;
-	unsigned int root_x, root_y, old_x, old_y, mask; 
-	int accel_numerator_return, accel_denominator_return, threshold_return;
-	Display *display = XOpenDisplay(NULL);
-
-	/*
-	Bool XQueryPointer(display, w, root_return, child_return, root_x_return, root_y_return,
-		         win_x_return, win_y_return, mask_return)
-		Display *display;
-		Window w;
-		Window *root_return, *child_return;
-		int *root_x_return, *root_y_return;
-		int *win_x_return, *win_y_return;
-		unsigned int *mask_return;
-	*/
-	XGetPointerControl(display, &accel_numerator_return, &accel_denominator_return, &threshold_return);
-	printf( "accel_numerator_return %d\naccel_denominator_return: %d\nthreshold_return: %d\n", 
-		accel_numerator_return, 
-		accel_denominator_return, 
-		threshold_return
-	);
-		
-	XQueryPointer(display, DefaultRootWindow(display), &root_window, &root_window, &old_x, &old_y, &old_x, &old_y, &mask);
-
-	while (1) {
-		
-		XQueryPointer(display, DefaultRootWindow(display), &root_window, &root_window, &root_x, &root_y, &root_x, &root_y, &mask);		
-		delta = sqrt(
-			(root_x-old_x)*(root_x-old_x)*0.95 +
-			(root_y-old_y)*(root_y-old_y)*1.10
-		); 
-		distance += delta;
-		buttons = (mask & (Button1Mask|Button2Mask|Button3Mask)) > 0;	
-		
-		if ( distance > old_distance || buttons != old_buttons )  {
-			
-			old_x = root_x;
-			old_y = root_y;
-			old_buttons = buttons;
-			old_distance = distance;
-			
-			printf( "Mouse (X: %d, Y: %d, buttons: %d, distance %f cm)    \r", 
-				root_x, 
-				root_y, 
-				buttons,
-				distance / 500
-			);
-			
-			
-		}
-		
-		usleep( 100000 );
-		
+int fd, bytes;
+unsigned char data[3];
+int left, middle, right;
+signed char x, y;
+double dist;
+    
+int main(int argc, char** argv)
+{
+	
+	// disable terminal buffering
+	setbuf(stdout, NULL); 
+	
+	// open stram
+	fd = open(device, O_RDWR);
+	if(fd == -1)
+	{
+		printf("Cannot read %s, try running with sudo\n", device);
+		return -1;
 	}
-	XCloseDisplay(display);
-	return 0;
+
+	printf("You can move your mouse ...");
+	
+	while(1)
+	{
+		// Read Mouse     
+		bytes = read(fd, data, sizeof(data));
+
+		if(bytes > 0)
+		{
+			// position +-1 or 0
+			x = data[1];
+			y = data[2];
+			
+			// button
+			left = data[0] & 0x1;
+			right = data[0] & 0x2;
+			middle = data[0] & 0x4;
+
+			if (x != 0 || y != 0)
+			{
+				dist += sqrt(x*x + y*y);
+				printf("\rDistance is %.0f px, approx %.2f cm     ", dist, dist/pps);
+			}
+
+			// printf("x=%d, y=%d, left=%d, middle=%d, right=%d, dist = %f\n", x, y, left, middle, right, dist);
+		    
+		}   
+	}
+	
+	return 0; 
 }

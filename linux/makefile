@@ -9,7 +9,7 @@ mousemeterd:
 	$(CC) mousemeterd.c -o mousemeterd
 
 mousemeter:
-	$(CC) mousemeter.c -lX11 -lm -o mousemeter
+	$(CC) mousemeter.c -lm -o mousemeter
 
 clean:
 	$(RM) mousemeterd mousemeterd.o
