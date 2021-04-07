@@ -8,23 +8,30 @@ int main (int argc, char **argv) {
 
 	setbuf(stdout, NULL); // disable terminal buffering
 
-    Window root_window; 
-    float distance = 0, old_distance = -1,  delta;
-    unsigned int buttons, old_buttons;
-    unsigned int root_x, root_y, old_x, old_y, mask; 
-    Display *display = XOpenDisplay(NULL);
+	Window root_window; 
+	float distance = 0, old_distance = -1,  delta;
+	unsigned int buttons, old_buttons;
+	unsigned int root_x, root_y, old_x, old_y, mask; 
+	int accel_numerator_return, accel_denominator_return, threshold_return;
+	Display *display = XOpenDisplay(NULL);
 
-    /*
-    Bool XQueryPointer(display, w, root_return, child_return, root_x_return, root_y_return,
-                         win_x_return, win_y_return, mask_return)
-          Display *display;
-          Window w;
-          Window *root_return, *child_return;
-          int *root_x_return, *root_y_return;
-          int *win_x_return, *win_y_return;
-          unsigned int *mask_return;
-    */
-        
+	/*
+	Bool XQueryPointer(display, w, root_return, child_return, root_x_return, root_y_return,
+		         win_x_return, win_y_return, mask_return)
+		Display *display;
+		Window w;
+		Window *root_return, *child_return;
+		int *root_x_return, *root_y_return;
+		int *win_x_return, *win_y_return;
+		unsigned int *mask_return;
+	*/
+	XGetPointerControl(display, &accel_numerator_return, &accel_denominator_return, &threshold_return);
+	printf( "accel_numerator_return %d\naccel_denominator_return: %d\nthreshold_return: %d\n", 
+		accel_numerator_return, 
+		accel_denominator_return, 
+		threshold_return
+	);
+		
 	XQueryPointer(display, DefaultRootWindow(display), &root_window, &root_window, &old_x, &old_y, &old_x, &old_y, &mask);
 
 	while (1) {
@@ -57,6 +64,6 @@ int main (int argc, char **argv) {
 		usleep( 100000 );
 		
 	}
-    XCloseDisplay(display);
-    return 0;
+	XCloseDisplay(display);
+	return 0;
 }
