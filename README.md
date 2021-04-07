@@ -1,10 +1,10 @@
 # Mousemeter
 
-Application to get distance mouse moved on table and number of clicks.
+Shows approximate distance mouse moved on the table, and number of clicks.
 
-![Mousemeter](https://github.com/miamibc/mousemeter/blob/master/demo.gif?raw=true)
+![Mousemeter](https://raw.github.com/miamibc/mousemeter/master/demo.gif)
 
-There will be two versions of this program for two platforms:
+One day, there will be two versions of this program for two platforms:
 
 - linux/mousemeter - console app
 - linux/mousemeterd - daemon for linux
@@ -15,7 +15,7 @@ There will be two versions of this program for two platforms:
 
 ### Linux
 
-Tested on Ubuntu16.
+Tested on Ubuntu 16 and 20.
 
     # Clone the repository
     git clone https://github.com/miamibc/mousemeter
@@ -36,4 +36,4 @@ Who knows, it's not ready yet.
 
 ## PS
 
-Thanks to **Max** for the idea. 
+Thanks to [Max](https://github.com/GooDiK) for the idea. 
